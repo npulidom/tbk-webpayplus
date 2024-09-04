@@ -1,0 +1,42 @@
+# docker compose
+services:
+  # tbk-webpayplus
+  tbk-webpayplus:
+    image: npulidom/tbk-webpayplus:dev
+    container_name: g-tbk-webpayplus
+    volumes:
+      - /home/node/app/node_modules
+      - ./:/home/node/app/
+    tty: true
+    environment:
+      - VIRTUAL_HOST=g-tbk-webpayplus.localhost
+      - MONGO_URL=mongodb://mongo/app
+    env_file:
+      - ./.env
+    ports:
+      - "80"
+    depends_on:
+      - mongo
+  # mongo-db
+  mongo:
+    image: mongo:6
+    container_name: g-mongo
+    ports:
+      - "3099:27017"
+    volumes:
+      - data-mongo:/data/db
+  # reverse proxy
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy:alpine
+    container_name: g-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./proxy.conf:/etc/nginx/conf.d/proxy.conf:ro
+volumes:
+  data-mongo:
+networks:
+  default:
+    name: g-network
+    driver: bridge

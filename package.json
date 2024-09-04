@@ -1,0 +1,19 @@
+{
+	"name": "g-tbk-webpayplus",
+	"license": "UNLICENSED",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"up": "docker-compose up -d",
+		"down": "docker-compose down",
+		"watch": "docker logs -ft g-tbk-webpayplus"
+	},
+	"dependencies": {
+		"@fastify/bearer-auth": "~9.4.0",
+		"fastify": "~4.28.1",
+		"mongodb": "~5.9.2",
+		"pino-pretty": "~11.2.2",
+		"transbank-sdk": "~5.0.0",
+		"xss": "~1.0.15"
+	}
+}

@@ -1,0 +1,8 @@
+# Linux
+*~
+
+# node
+node_modules
+*-lock.*
+*.log
+*.env

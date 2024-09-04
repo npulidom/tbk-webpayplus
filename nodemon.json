@@ -1,0 +1,7 @@
+{
+	"verbose": true,
+	"ext": "js",
+	"events": {
+		"start": "cls || clear"
+	}
+}
