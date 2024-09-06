@@ -116,7 +116,8 @@ async function createTrx(req, res) {
  */
 async function authorizeTrx(req, res) {
 
-	let buyOrder = ''
+	let buyOrder
+	let tbkResCode
 
 	try {
 
@@ -137,9 +138,11 @@ async function authorizeTrx(req, res) {
 		const $tbk = new WebpayPlus.Transaction(new Options(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration))
 		const response = await $tbk.commit(TBK_TOKEN)
 
-		req.log.info(`Transbank (authorizeTrx) -> response code=${response.response_code}`)
+		// response code
+		tbkResCode = response.response_code
+		req.log.info(`Transbank (authorizeTrx) -> response code=${tbkResCode}`)
 
-		if (response.response_code !== 0) throw `UNEXPECTED_TBK_RESPONSE:${response.response_code}`
+		if (tbkResCode !== 0) throw `UNEXPECTED_TBK_RESPONSE:${tbkResCode}`
 		if (buyOrder !== response.buy_order) throw `INVALID_TBK_RESPONSE_BUY_ORDER:${response.buy_order}`
 
 		req.log.info(`Transbank (authorizeTrx) -> transaction comitted successfully, buyOrder=${buyOrder}`)
@@ -170,9 +173,16 @@ async function authorizeTrx(req, res) {
 	catch (e) {
 
 		req.log.error(`Transbank (authorizeTrx) -> exception: ${e.toString()}`)
-		const params = buyOrder ? `?buyOrder=${buyOrder}` : ''
+
+		const params = new URLSearchParams()
+		// params
+		if (buyOrder) params.set('buyOrder', buyOrder)
+		if (tbkResCode) params.set('tbkResCode', tbkResCode)
+
+		const qs = params.size ? `?${params.toString()}` : ''
+
 		// redirect to failed URL
-		res.redirect(`${process.env.TBK_FAILED_URL}${params}`)
+		res.redirect(`${process.env.TBK_FAILED_URL}${qs}`)
 	}
 }
 
