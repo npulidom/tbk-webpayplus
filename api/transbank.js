@@ -147,6 +147,8 @@ async function authorizeTrx(req, res) {
 
 		req.log.info(`Transbank (authorizeTrx) -> transaction comitted successfully, buyOrder=${buyOrder}`)
 
+		const cardNumber = response.card_detail?.card_number // last 4 digits (remove xx/** from card number)
+
 		const trx = {
 
 			_id         : new ObjectId(),
@@ -159,8 +161,8 @@ async function authorizeTrx(req, res) {
 			sharesAmount: Number(response.installments_amount) || null,
 			tbkStatus   : response.status,
 			tbkVci      : response.vci,
-			cardDigits  : response.card_detail?.card_number || null, // last 4 digits
-			createdAt   : new Date(response.transaction_date)
+			cardDigits  : cardNumber ? cardNumber.substring(cardNumber.length - 4) : null,
+			createdAt   : new Date(response.transaction_date),
 		}
 
 		// update inscription
