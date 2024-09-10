@@ -195,8 +195,8 @@ async function refund(req, res) {
 	try {
 
 		// sanitize inputs
-		buyOrder     = xss(buyOrder).trim()
 		commerceCode = xss(commerceCode).trim()
+		buyOrder     = xss(buyOrder).trim()
 		authCode     = xss(authCode).trim()
 		amount       = parseInt(amount) || 0
 
