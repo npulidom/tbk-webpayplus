@@ -7,7 +7,7 @@ import xss from 'xss'
 
 import tbk from 'transbank-sdk'
 // common-js lib restriction
-const { WebpayPlus, Options, IntegrationApiKeys, Environment, IntegrationCommerceCodes, TransactionDetail } = tbk
+const { WebpayPlus, Options, IntegrationApiKeys, Environment, IntegrationCommerceCodes } = tbk
 
 import * as mongo from './mongo.js'
 import * as server from './server.js'

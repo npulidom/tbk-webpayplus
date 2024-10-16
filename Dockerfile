@@ -23,7 +23,7 @@ FROM base AS prod
 ENV NODE_ENV=production
 
 # install deps
-RUN npm ci --production && npm cache clean --force
+RUN npm ci --omit=dev && npm cache clean --force
 
 # copy app
 COPY . .
@@ -40,7 +40,7 @@ FROM base AS dev
 ENV NODE_ENV=development
 
 # install deps
-RUN npm ci --production && npm cache clean --force
+RUN npm ci --omit=dev && npm cache clean --force
 
 # copy app
 COPY . .
