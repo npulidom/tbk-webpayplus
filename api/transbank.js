@@ -77,10 +77,12 @@ async function createTrx(req, res) {
 	try {
 
 		// parse user data
-		buyOrder = xss(buyOrder).trim()
-		amount   = Number(amount)
+		buyOrder  = xss(buyOrder).trim()
+		sessionId = xss(sessionId).trim()
+		amount    = Number(amount)
 
 		if (!req.headers['user-agent']) throw 'MISSING_UA'
+		if (!sessionId) throw 'INVALID_SESSION_ID'
 		if (!amount) throw 'INVALID_AMOUNT'
 
 		// check if transaction already exists
@@ -89,7 +91,7 @@ async function createTrx(req, res) {
 		const hash      = encrypt(buyOrder)
 		const returnUrl = server.getBaseUrl(`trx/authorize/${hash}`)
 
-		req.log.info(`Transbank (createTrx) -> creating transaction, buyOrder=${buyOrder}`)
+		req.log.info(`Transbank (createTrx) -> creating transaction, buyOrder=${buyOrder} sessionId=${sessionId}`)
 
 		// transbank API call
 		const $tbk = new WebpayPlus.Transaction(new Options(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration))
@@ -158,7 +160,7 @@ async function authorizeTrx(req, res) {
 			paymentType : response.payment_type_code,
 			amount      : Number(response.amount),
 			shares      : Number(response.installments_number || 1),
-			sharesAmount: Number(response.installments_amount) || null,
+			sharesAmount: Number(response.installments_amount) || Number(response.amount),
 			tbkStatus   : response.status,
 			tbkVci      : response.vci,
 			cardDigits  : cardNumber ? cardNumber.substring(cardNumber.length - 4) : null,
