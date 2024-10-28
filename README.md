@@ -64,13 +64,12 @@ curl -iX POST -H 'Content-Type: application/json' -H 'Authorization: Bearer {API
 
 Body Params
 
-- commerceCode `string`
 - buyOrder `string`
 - authCode `string`
 - amount `number`
 
 ```bash
-curl -iX POST -H 'Content-Type: application/json' -H 'Authorization: Bearer {API-KEY}' -d '{ "commerceCode": "597055555542", "buyOrder": "12345678", "authCode": "123456", "amount": 800 }' {BASE_URL}/trx/refund
+curl -iX POST -H 'Content-Type: application/json' -H 'Authorization: Bearer {API-KEY}' -d '{ "buyOrder": "12345678", "authCode": "123456", "amount": 800 }' {BASE_URL}/trx/refund
 ```
 
 ### Response Format

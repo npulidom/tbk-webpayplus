@@ -21,7 +21,7 @@ const LOGGER_ENV = {
 	},
 	production: {
 
-		level: parseInt(process.env.DEBUG_LOGS || 0) ? 'debug' : 'info'
+		level: Number.parseInt(process.env.DEBUG_LOGS || 0) ? 'debug' : 'info'
 	}
 }
 

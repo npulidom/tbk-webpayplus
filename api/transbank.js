@@ -30,12 +30,6 @@ const COLLECTION = {
 const IS_ENV_PROD = !!process.env.TBK_CODE && !!process.env.TBK_KEY
 
 /**
- * Test Commerce Code
- * @constant {string} TEST_COMMERCE_CODE - The test commerce code
- */
-const TEST_COMMERCE_CODE = '597055555542'
-
-/**
  * Setup
  * @returns {undefined}
  */
@@ -160,9 +154,10 @@ async function authorizeTrx(req, res) {
 			amount      : Number(response.amount),
 			shares      : Number(response.installments_number || 1),
 			sharesAmount: Number(response.installments_amount) || Number(response.amount),
+			cardDigits  : cardNumber ? cardNumber.substring(cardNumber.length - 4) : null,
 			tbkStatus   : response.status,
 			tbkVci      : response.vci,
-			cardDigits  : cardNumber ? cardNumber.substring(cardNumber.length - 4) : null,
+			tbkToken    : TBK_TOKEN,
 			createdAt   : new Date(response.transaction_date),
 		}
 
@@ -199,37 +194,32 @@ async function refund(req, res) {
 
 	let {
 
-		commerceCode = '', // child commerce code
-		buyOrder     = '', // saved buyOrder
-		authCode     = '', // saved authCode
-		amount       = '', // amount to refund
+		buyOrder = '', // saved buyOrder
+		authCode = '', // saved authCode
+		amount   = '', // amount to refund
 	} = req.body
 
 	try {
 
 		// sanitize inputs
-		commerceCode = xss(commerceCode).trim()
-		buyOrder     = xss(buyOrder).trim()
-		authCode     = xss(authCode).trim()
-		amount       = parseInt(amount) || 0
+		buyOrder = xss(buyOrder).trim()
+		authCode = xss(authCode).trim()
+		amount   = Number.parseInt(amount) || 0
 
 		if (!buyOrder) throw 'INVALID_BUY_ORDER'
 		if (!authCode) throw 'INVALID_AUTH_CODE'
 		if (!amount) throw 'INVALID_AMOUNT'
 
-		// default commerce code (integration)
-		if (!commerceCode) commerceCode = TEST_COMMERCE_CODE
-
 		// get trx
 		const trx = await mongo.count(COLLECTION.transactions, { buyOrder, authCode })
 		// check if payment has not processed yet
-		if (!trx) throw 'TRX_WITH_AUTH_CODE_NOT_FOUND'
+		if (!trx || !trx.tbkToken) throw 'TRX_WITH_AUTH_CODE_NOT_FOUND'
 
 		req.log.info(`Transbank (refund) -> refunding transaction, buyOrder=${buyOrder}`)
 
 		// transbank API call
 		const $tbk     = new WebpayPlus.Transaction(WebpayPlus.options)
-		const response = await $tbk.refund(buyOrder, commerceCode, buyOrder, amount)
+		const response = await $tbk.refund(trx.tbkToken, amount)
 
 		req.log.info(`Transbank (refund) -> response ok: ${JSON.stringify(response)}, buyOrder=${buyOrder}`)
 
