@@ -1,5 +1,5 @@
 /**
- * Transbank
+ * Transbank (Webpay Plus)
  */
 
 import { ObjectId } from 'mongodb'
@@ -81,7 +81,6 @@ async function createTrx(req, res) {
 		sessionId = xss(sessionId).trim()
 		amount    = Number(amount)
 
-		if (!req.headers['user-agent']) throw 'MISSING_UA'
 		if (!sessionId) throw 'INVALID_SESSION_ID'
 		if (!amount) throw 'INVALID_AMOUNT'
 
