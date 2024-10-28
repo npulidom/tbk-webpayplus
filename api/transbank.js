@@ -7,7 +7,7 @@ import xss from 'xss'
 
 import tbk from 'transbank-sdk'
 // common-js lib restriction
-const { WebpayPlus, Options, IntegrationApiKeys, Environment, IntegrationCommerceCodes } = tbk
+const { WebpayPlus } = tbk
 
 import * as mongo from './mongo.js'
 import * as server from './server.js'
@@ -93,7 +93,7 @@ async function createTrx(req, res) {
 		req.log.info(`Transbank (createTrx) -> creating transaction, buyOrder=${buyOrder} sessionId=${sessionId}`)
 
 		// transbank API call
-		const $tbk = new WebpayPlus.Transaction(new Options(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration))
+		const $tbk = new WebpayPlus.Transaction(WebpayPlus.options)
 		const { token, url } = await $tbk.create(buyOrder, sessionId, amount, returnUrl)
 		// response validation
 		if (!token || !url) throw 'UNEXPECTED_TBK_RESPONSE'
@@ -136,7 +136,7 @@ async function authorizeTrx(req, res) {
 		if (await mongo.count(COLLECTION.transactions, { buyOrder })) throw 'TRX_ALREADY_PROCESSED'
 
 		// transbank API call
-		const $tbk = new WebpayPlus.Transaction(new Options(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration))
+		const $tbk = new WebpayPlus.Transaction(WebpayPlus.options)
 		const response = await $tbk.commit(TBK_TOKEN)
 
 		// response code
@@ -228,7 +228,7 @@ async function refund(req, res) {
 		req.log.info(`Transbank (refund) -> refunding transaction, buyOrder=${buyOrder}`)
 
 		// transbank API call
-		const $tbk     = new WebpayPlus.Transaction(new Options(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration))
+		const $tbk     = new WebpayPlus.Transaction(WebpayPlus.options)
 		const response = await $tbk.refund(buyOrder, commerceCode, buyOrder, amount)
 
 		req.log.info(`Transbank (refund) -> response ok: ${JSON.stringify(response)}, buyOrder=${buyOrder}`)
