@@ -11,7 +11,7 @@ Container service for Transbank Webpay Plus API using MongoDB as database storag
 MONGO_URL: MongoDB URL, required (i.e. mongodb://mongo/app)
 BASE_URL: Base URL for cloud setup, a path in URL is supported (i.e. https://myservices.com/tbk-webpayplus/)
 API_KEY: Service API Key (required)
-ENCRYPTION_KEY: Key for URL encrypt/decrypt (optional, max. 32 chars)
+ENCRYPTION_KEY: Key for URL encrypt/decrypt (optional, must be 32 chars length)
 TBK_CODE: Webpay Plus Store Code for production (a.k.a código comercio)
 TBK_KEY: Webpay Plus API Key for production
 TBK_SUCCESS_URL: Payment success URL
