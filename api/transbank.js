@@ -113,6 +113,7 @@ async function authorizeTrx(req, res) {
 
 	let buyOrder
 	let tbkResCode
+	let redirectUrl
 
 	try {
 
@@ -165,8 +166,8 @@ async function authorizeTrx(req, res) {
 		await mongo.insertOne(COLLECTION.transactions, trx)
 
 		req.log.info(`Transbank (authorizeTrx) -> transaction saved successfully, id=${trx._id}`)
-		// redirect to success URL
-		res.redirect(`${process.env.TBK_SUCCESS_URL}?buyOrder=${buyOrder}`)
+
+		redirectUrl = `${process.env.TBK_SUCCESS_URL}?buyOrder=${buyOrder}`
 	}
 	catch (e) {
 
@@ -178,9 +179,13 @@ async function authorizeTrx(req, res) {
 		if (tbkResCode) params.set('tbkResCode', tbkResCode)
 
 		const qs = params.size ? `?${params.toString()}` : ''
+		redirectUrl = `${process.env.TBK_FAILED_URL}${qs}`
+	}
+	finally {
 
-		// redirect to failed URL
-		res.redirect(`${process.env.TBK_FAILED_URL}${qs}`)
+		req.log.info(`Transbank (authorizeTrx) -> redirecting, url=${redirectUrl}`)
+		// redirect
+		res.redirect(redirectUrl)
 	}
 }
 
