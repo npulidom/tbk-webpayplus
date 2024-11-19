@@ -3,6 +3,7 @@
  */
 
 import fastify from 'fastify'
+import formbody from '@fastify/formbody'
 
 /**
  * Logger Environment
@@ -58,6 +59,9 @@ async function create() {
 	// public health check
 	if (basePath != '/')
 		app.get(`${basePath}health`, healthCheck)
+
+	// form body parser
+	app.register(formbody)
 
 	// return instance
 	return app
