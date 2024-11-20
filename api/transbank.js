@@ -187,7 +187,7 @@ async function authorizeTrx(req, res) {
 
 		req.log.info(`Transbank (authorizeTrx) -> redirecting, url=${redirectUrl}`)
 		// redirect
-		res.redirect(redirectUrl)
+		return res.redirect(redirectUrl)
 	}
 }
 
