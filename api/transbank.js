@@ -119,11 +119,13 @@ async function authorizeTrx(req, res) {
 
 		const { hash = '' } = req.params
 		const { token_ws:TBK_TOKEN = '' } = req.query
+
+		// decrypt buy order
+		buyOrder = hash ? decrypt(hash) : null
+
 		// validate params
 		if (!TBK_TOKEN) throw 'INVALID_TBK_TOKEN'
-
-		// decrypt inscription id
-		buyOrder = decrypt(hash)
+		if (!buyOrder) throw 'INVALID_BUY_ORDER'
 
 		req.log.debug(`Transbank (authorizeTrx) -> params, buyOrder=${buyOrder} tbk-token=${TBK_TOKEN}`)
 
