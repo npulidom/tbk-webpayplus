@@ -92,7 +92,8 @@ async function createTrx(req, res) {
 		// response validation
 		if (!token || !url) throw 'UNEXPECTED_TBK_RESPONSE'
 
-		req.log.info(`Transbank (createTrx) -> response received, token=${token.substring(0, 3)}****`)
+		req.log.debug(`Transbank (createTrx) -> response received, token=${token}`)
+		req.log.info(`Transbank (createTrx) -> sending response, token=${token.substring(0, 3)}**** url=${url}`)
 
 		return { status: 'ok', url, token }
 	}
