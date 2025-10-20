@@ -5,9 +5,10 @@
 import { ObjectId } from 'mongodb'
 import xss from 'xss'
 
+//import { WebpayPlus, Environment, Options } from 'transbank-sdk'
+// ES modules support
 import tbk from 'transbank-sdk'
-// common-js lib restriction
-const { WebpayPlus } = tbk
+const { WebpayPlus, Environment, Options } = tbk
 
 import * as mongo from './mongo.js'
 import * as server from './server.js'
@@ -30,6 +31,24 @@ const COLLECTION = {
 const IS_ENV_PROD = !!process.env.TBK_CODE && !!process.env.TBK_KEY
 
 /**
+ * Integration Commerce Code (testing)
+ * @constant {string} WEBPAYPLUS_INTEGRATION_COMMERCE_CODE - Integration Commerce Code
+ */
+const WEBPAYPLUS_INTEGRATION_COMMERCE_CODE = '597055555532'
+
+/**
+ * Webpayplys Integration API Key (testing)
+ * @constant {string} WEBPAYPLUS_INTEGRATION_API_KEY - Integration API Key
+ */
+const WEBPAYPLUS_INTEGRATION_API_KEY = '579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C'
+
+/**
+ * Webpay Plus Options
+ * @type {Options} - Webpay Plus Options
+ */
+let WEBPAYPLUS_OPTIONS
+
+/**
  * Setup
  * @returns {undefined}
  */
@@ -44,13 +63,16 @@ async function setup() {
 	if (!process.env.TBK_FAILED_URL) throw 'INVALID_TBK_FAILED_URL'
 
 	// testing
-	if (!IS_ENV_PROD)
-		return WebpayPlus.configureForTesting()
+	if (!IS_ENV_PROD) {
+
+		WEBPAYPLUS_OPTIONS = new Options(WEBPAYPLUS_INTEGRATION_COMMERCE_CODE, WEBPAYPLUS_INTEGRATION_API_KEY, Environment.Integration);
+		return
+	}
 
 	// production credentials
 	log.info(`Transbank (setup) -> production mode, code=${process.env.TBK_CODE} tbk-key=${process.env.TBK_KEY.substring(0, 3)}****`)
 
-	WebpayPlus.configureForProduction(process.env.TBK_CODE, process.env.TBK_KEY)
+	WEBPAYPLUS_OPTIONS = new Options(process.env.TBK_CODE, process.env.TBK_KEY, Environment.Production)
 }
 
 /**
@@ -81,13 +103,13 @@ async function createTrx(req, res) {
 		// check if transaction already exists
 		if (await mongo.count(COLLECTION.transactions, { buyOrder })) throw 'TRX_ALREADY_PROCESSED'
 
-		const hash      = encrypt(buyOrder)
+		const hash = encrypt(buyOrder)
 		const returnUrl = server.getBaseUrl(`trx/authorize/${hash}`)
 
 		req.log.info(`Transbank (createTrx) -> creating transaction, buyOrder=${buyOrder} sessionId=${sessionId}`)
 
 		// transbank API call
-		const $tbk = new WebpayPlus.Transaction(WebpayPlus.options)
+		const $tbk = new WebpayPlus.Transaction(WEBPAYPLUS_OPTIONS)
 		const { token, url } = await $tbk.create(buyOrder, sessionId, amount, returnUrl)
 		// response validation
 		if (!token || !url) throw 'UNEXPECTED_TBK_RESPONSE'
@@ -134,7 +156,7 @@ async function authorizeTrx(req, res) {
 		if (await mongo.count(COLLECTION.transactions, { buyOrder })) throw 'TRX_ALREADY_PROCESSED'
 
 		// transbank API call
-		const $tbk = new WebpayPlus.Transaction(WebpayPlus.options)
+		const $tbk = new WebpayPlus.Transaction(WEBPAYPLUS_OPTIONS)
 		const response = await $tbk.commit(TBK_TOKEN)
 
 		// response code
@@ -226,7 +248,7 @@ async function refund(req, res) {
 		req.log.info(`Transbank (refund) -> refunding transaction, buyOrder=${buyOrder}`)
 
 		// transbank API call
-		const $tbk     = new WebpayPlus.Transaction(WebpayPlus.options)
+		const $tbk     = new WebpayPlus.Transaction(WEBPAYPLUS_OPTIONS)
 		const response = await $tbk.refund(trx.tbkToken, amount)
 
 		req.log.info(`Transbank (refund) -> response ok: ${JSON.stringify(response)}, buyOrder=${buyOrder}`)

@@ -16,7 +16,7 @@ let DB
  */
 async function connect() {
 
-	DB = (await MongoClient.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true })).db()
+	DB = (await MongoClient.connect(process.env.MONGO_URL)).db()
 }
 
 /**

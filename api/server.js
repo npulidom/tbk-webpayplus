@@ -48,8 +48,10 @@ async function create() {
 		logger                : LOGGER_ENV[process.env.NODE_ENV],
 		disableRequestLogging : true,
 		trustProxy            : true, // AWS ALB
-		ignoreTrailingSlash   : true,
-		ignoreDuplicateSlashes: true,
+		routerOptions: {
+			ignoreTrailingSlash   : true,
+			ignoreDuplicateSlashes: true,
+		}
 	})
 
 	// health check route

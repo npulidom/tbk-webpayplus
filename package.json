@@ -9,12 +9,12 @@
 		"watch": "docker logs -ft g-tbk-webpayplus"
 	},
 	"dependencies": {
-		"@fastify/bearer-auth": "~9.4.0",
-		"@fastify/formbody": "~7.4.0",
-		"fastify": "~4.28.1",
-		"mongodb": "~5.9.2",
-		"pino-pretty": "~11.2.2",
-		"transbank-sdk": "~5.0.0",
+		"@fastify/bearer-auth": "~10.1.1",
+		"@fastify/formbody": "~8.0.2",
+		"fastify": "~5.6.1",
+		"mongodb": "~6.20.0",
+		"pino-pretty": "~13.1.2",
+		"transbank-sdk": "~6.1.0",
 		"xss": "~1.0.15"
 	}
 }
