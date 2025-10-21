@@ -117,21 +117,21 @@ pass: 123
 
 ### Endpoint Test
 
-> 1. Get a transaction token. Example:
+1. Get a transaction token. Example:
 
 ```sh
 curl -iX POST -H 'Content-Type: application/json' -H 'Authorization: Bearer some-secret' \
 -d '{ "buyOrder": "240830VHY3", "sessionId": "66d19c1d8ef6c3a5d452d715", "amount": 15000 }' http://g-tbk-webpayplus.localhost/trx/create
 ```
 
-> 2. Send form using `test/init.html` example (exposing test folder using `http-server` node package):
+2. Send form using `test/init.html` example (exposing test folder using `http-server` node package):
 
 ```sh
 ~ cd test
 ~ http-server
 ```
 
-> 3. Access `http://localhost:8080/init.html?token={token}` in your browser passing the token received from the previous step.
+3. Access `http://localhost:8080/init.html?token={token}` in your browser passing the token received from the previous step.
 
 
 ## Reference
