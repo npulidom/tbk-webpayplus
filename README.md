@@ -2,7 +2,8 @@
 
 Container service for Transbank Webpay Plus API using MongoDB as database storage.
 
-- MongoDB v4+ required
+- MongoDB v6+ required
+- Transbank SDK v6.x
 - NOTE: For security reasons, prevent exposing this API directly at client-side applications.
 
 [Github Repository](https://github.com/npulidom/tbk-webpayplus)
