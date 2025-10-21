@@ -39,6 +39,7 @@ const WEBPAYPLUS_INTEGRATION_COMMERCE_CODE = '597055555532'
 /**
  * Webpayplys Integration API Key (testing)
  * @constant {string} WEBPAYPLUS_INTEGRATION_API_KEY - Integration API Key
+ * @link https://www.transbankdevelopers.cl/documentacion/como_empezar#tarjetas-de-prueba
  */
 const WEBPAYPLUS_INTEGRATION_API_KEY = '579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C'
 
@@ -169,7 +170,7 @@ async function authorizeTrx(req, res) {
 		req.log.info(`Transbank (authorizeTrx) -> transaction comitted successfully, buyOrder=${buyOrder}`)
 
 		const cardNumber = response.card_detail?.card_number // last 4 digits (remove xx/** from card number)
-
+		// transaction object
 		const trx = {
 
 			_id         : new ObjectId(),
@@ -187,7 +188,7 @@ async function authorizeTrx(req, res) {
 			createdAt   : new Date(response.transaction_date),
 		}
 
-		// update inscription
+		// update trx
 		await mongo.insertOne(COLLECTION.transactions, trx)
 
 		req.log.info(`Transbank (authorizeTrx) -> transaction saved successfully, id=${trx._id}`)
